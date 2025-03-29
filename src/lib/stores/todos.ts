@@ -2,9 +2,8 @@ import { writable } from 'svelte/store';
 
 // Define the shape of a TODO item using a TypeScript type
 export type Todo = {
-    id: string; // unique ID for updates
-    title: string;
-    note: string; // Added note field
+    id: string;
+    note: string;
     createdAt: string;
 };
 
