@@ -4,12 +4,14 @@
 	let title = '';
 	let editingId: string | null = null;
 	let editedTitle = '';
+	let editedNote = '';
 
 	function addTodo() {
 		if (!title) return;
 		const newTodo: Todo = {
 			id: uuid(),
 			title,
+			note: '',
 			createdAt: new Date().toISOString()
 		};
 		todos.update((t) => [...t, newTodo]);
@@ -19,17 +21,20 @@
 	function startEdit(todo: Todo) {
 		editingId = todo.id;
 		editedTitle = todo.title;
+		editedNote = todo.note;
 	}
 
 	function saveEdit(id: string) {
-		todos.update((t) => t.map((todo) => (todo.id === id ? { ...todo, title: editedTitle } : todo)));
+		todos.update((t) =>
+			t.map((todo) =>
+				todo.id === id ? { ...todo, title: editedTitle, note: editedNote } : todo
+			)
+		);
 		editingId = null;
 	}
 
 	function deleteTodo(id: string) {
-		todos.update((t) => t.filter((todo) => todo.id !== id));
-
-		// Line above explained:
+		// Line below explained:
 		// todos.update((t) =>        // Access the current list of TODOs (`t`)
 		//     t.filter((todo) =>     // Create a new list by filtering the old one
 		//         todo.id !== id     // Keep only TODOs whose id does NOT match the one to delete
@@ -42,31 +47,63 @@
 		//         return todo.id !== id;
 		// 	   });
 		// });
+
+		todos.update((t) => t.filter((todo) => todo.id !== id));
+	}
+
+	function updateNote(id: string, note: string) {
+		todos.update((t) =>
+			t.map((todo) =>
+				todo.id === id ? { ...todo, note } : todo
+			)
+		);
 	}
 </script>
 
+<div>
+	<h1>Notes App</h1>
 
-<!-- page contents  -->
-<h1>Welcome to SvelteKit: TODO list</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+	<form on:submit|preventDefault={addTodo}>
+		<input
+			bind:value={title}
+			placeholder="Enter note title"
+			required
+		/>
+		<button type="submit">Add Note</button>
+	</form>
 
-
-<form on:submit|preventDefault={addTodo}>
-	<input bind:value={title} placeholder="Enter TODO title" required />
-	<button type="submit">Add TODO</button>
-</form>
-
-<ul>
-	{#each $todos as todo}
-		<li>
-			{#if editingId === todo.id}
-				<input bind:value={editedTitle} />
-				<button on:click={() => saveEdit(todo.id)}>Save</button>
-			{:else}
-				{todo.title}
-				<button on:click={() => startEdit(todo)}>Edit</button>
-				<button on:click={() => deleteTodo(todo.id)}>Delete</button>
-			{/if}
-		</li>
-	{/each}
-</ul>
+	<div>
+		{#each $todos as todo}
+			<div>
+				{#if editingId === todo.id}
+					<div>
+						<input
+							bind:value={editedTitle}
+							placeholder="Note title"
+						/>
+						<textarea
+							bind:value={editedNote}
+							placeholder="Write your note here..."
+							rows="5"
+						></textarea>
+						<button on:click={() => saveEdit(todo.id)}>Save</button>
+					</div>
+				{:else}
+					<div>
+						<h2>{todo.title}</h2>
+						<textarea
+							value={todo.note}
+							on:input={(e) => updateNote(todo.id, (e.target as HTMLTextAreaElement).value)}
+							placeholder="Write your note here..."
+							rows="5"
+						></textarea>
+						<div>
+							<button on:click={() => startEdit(todo)}>Edit Title</button>
+							<button on:click={() => deleteTodo(todo.id)}>Delete</button>
+						</div>
+					</div>
+				{/if}
+			</div>
+		{/each}
+	</div>
+</div>

@@ -4,6 +4,7 @@ import { writable } from 'svelte/store';
 export type Todo = {
     id: string; // unique ID for updates
     title: string;
+    note: string; // Added note field
     createdAt: string;
 };
 
