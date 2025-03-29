@@ -8,7 +8,7 @@
 			note: '',
 			createdAt: new Date().toISOString()
 		};
-		todos.update((t) => [...t, newNote]);
+		todos.update((t) => [newNote, ...t]);
 	}
 
 	function deleteTodo(id: string) {
