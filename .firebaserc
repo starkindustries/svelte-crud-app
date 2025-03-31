@@ -1,0 +1,12 @@
+{
+  "projects": {
+    "default": "svelte-crud-app-687ed",
+    "staging": "svelte-crud-14a03"
+  },
+  "targets": {},
+  "etags": {
+    "svelte-crud-14a03": {
+      "extensionInstances": {}
+    }
+  }
+}
