@@ -1,22 +1,47 @@
-# sv
+# Notes App
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A simple, elegant notes application built with SvelteKit.
 
-## Creating a project
+## Setup
 
-If you're seeing this, you've probably already done this step. Congrats!
-
+1. Install dependencies:
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+npm install
 ```
 
-## Developing
+2. Start the development server:
+```bash
+npm run dev
+```
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Firebase Setup
+
+1. Install Firebase CLI:
+```bash
+npm install -g firebase-tools
+```
+
+2. Login to Firebase:
+```bash
+npx firebase login
+```
+
+3. Deploy to Firebase:
+```bash
+npx firebase deploy
+```
+
+## Features
+
+- Real-time note saving
+- Dark theme
+- Floating action button for adding notes
+- Responsive design
+- Local storage persistence
+
+## Development
+
+Once you've created a project and installed dependencies with `npm install`, start a development server:
 
 ```bash
 npm run dev
