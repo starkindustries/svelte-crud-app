@@ -10,6 +10,14 @@
 		textarea.style.height = textarea.scrollHeight + 'px';
 	}
 
+	// Reactive statement to handle textarea resizing
+	$: {
+		// Wait for next tick to ensure textareas are rendered
+		setTimeout(() => {
+			Object.values(textareas).forEach(autoResize);
+		}, 0);
+	}
+
 	function handleInput(e: Event, id: string) {
 		const textarea = e.target as HTMLTextAreaElement;
 		updateNote(id, textarea.value);
