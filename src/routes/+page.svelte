@@ -73,6 +73,12 @@
 	function handleBlur() {
 		focusedNoteId = null;
 	}
+
+	function handleMenuClick(e: MouseEvent, id: string) {
+		e.preventDefault();
+		e.stopPropagation();
+		deleteTodo(id);
+	}
 </script>
 
 <div class="app">
@@ -89,7 +95,12 @@
 					rows="1"
 				></textarea>
 				{#if focusedNoteId === todo.id}
-					<button class="menu-button" on:click={() => deleteTodo(todo.id)} aria-label="Delete note">
+					<button
+						class="menu-button"
+						on:click={(e) => handleMenuClick(e, todo.id)}
+						on:mousedown|preventDefault
+						aria-label="Delete note"
+					>
 						⋮
 					</button>
 				{/if}
