@@ -243,8 +243,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
-		min-width: 120px;
+		min-width: 150px;
 		animation: slideUp 0.2s ease-out;
+		white-space: nowrap;
 	}
 
 	.submenu button {
@@ -256,6 +257,7 @@
 		cursor: pointer;
 		border-radius: 4px;
 		transition: all 0.2s;
+		white-space: nowrap;
 	}
 
 	.submenu button:hover {
