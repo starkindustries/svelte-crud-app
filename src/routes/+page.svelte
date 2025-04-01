@@ -177,6 +177,7 @@
 		padding: 0rem;
 		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
 		color: white;
+		font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	}
 
 	.notes-container {
@@ -187,7 +188,7 @@
 
 	.note {
 		background: rgba(255, 255, 255, 0.1);
-		border-radius: 8px;
+		border-radius: 0;
 		backdrop-filter: blur(10px);
 		position: relative;
 	}
@@ -198,11 +199,12 @@
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		color: white;
 		padding: 0.5rem;
-		border-radius: 4px;
+		border-radius: 0;
 		font-size: 1rem;
 		min-height: 2.5rem;
 		resize: none;
 		overflow: hidden;
+		font-family: inherit;
 	}
 
 	textarea::placeholder {
@@ -246,6 +248,7 @@
 		min-width: 150px;
 		animation: slideUp 0.2s ease-out;
 		white-space: nowrap;
+		font-family: inherit;
 	}
 
 	.submenu button {
@@ -258,6 +261,7 @@
 		border-radius: 4px;
 		transition: all 0.2s;
 		white-space: nowrap;
+		font-family: inherit;
 	}
 
 	.submenu button:hover {
