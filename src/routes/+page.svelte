@@ -4,6 +4,7 @@
 
 	let textareas: { [key: string]: HTMLTextAreaElement } = {};
 	let focusedNoteId: string | null = null;
+	let openMenuId: string | null = null;
 
 	function autoResize(textarea: HTMLTextAreaElement) {
 		textarea.style.height = 'auto';
@@ -77,9 +78,33 @@
 	function handleMenuClick(e: MouseEvent, id: string) {
 		e.preventDefault();
 		e.stopPropagation();
+		openMenuId = openMenuId === id ? null : id;
+	}
+
+	function handleShare(id: string) {
+		console.log('Sharing note:', id);
+		openMenuId = null;
+	}
+
+	function handleMakeCopy(id: string) {
+		console.log('Making copy of note:', id);
+		openMenuId = null;
+	}
+
+	function handleDelete(id: string) {
 		deleteTodo(id);
+		openMenuId = null;
+	}
+
+	// Close menu when clicking outside
+	function handleClickOutside(e: MouseEvent) {
+		if (!(e.target as HTMLElement).closest('.menu-container')) {
+			openMenuId = null;
+		}
 	}
 </script>
+
+<svelte:window on:click={handleClickOutside} />
 
 <div class="app">
 	<div class="notes-container">
@@ -95,14 +120,23 @@
 					rows="1"
 				></textarea>
 				{#if focusedNoteId === todo.id}
-					<button
-						class="menu-button"
-						on:click={(e) => handleMenuClick(e, todo.id)}
-						on:mousedown|preventDefault
-						aria-label="Delete note"
-					>
-						⋮
-					</button>
+					<div class="menu-container">
+						<button
+							class="menu-button"
+							on:click={(e) => handleMenuClick(e, todo.id)}
+							on:mousedown|preventDefault
+							aria-label="Open menu"
+						>
+							⋮
+						</button>
+						{#if openMenuId === todo.id}
+							<div class="submenu">
+								<button on:click={() => handleShare(todo.id)}>Share</button>
+								<button on:click={() => handleMakeCopy(todo.id)}>Make Copy</button>
+								<button class="delete" on:click={() => handleDelete(todo.id)}>Delete</button>
+							</div>
+						{/if}
+					</div>
 				{/if}
 			</div>
 		{/each}
@@ -152,10 +186,13 @@
 		color: rgba(255, 255, 255, 0.5);
 	}
 
-	.menu-button {
+	.menu-container {
 		position: absolute;
 		bottom: 0.5rem;
 		right: 0.5rem;
+	}
+
+	.menu-button {
 		background: none;
 		border: none;
 		color: rgba(255, 255, 255, 0.5);
@@ -168,6 +205,57 @@
 	.menu-button:hover {
 		color: white;
 		transform: scale(1.1);
+	}
+
+	.submenu {
+		position: absolute;
+		bottom: 100%;
+		right: 0;
+		background: rgba(30, 30, 30, 0.95);
+		border-radius: 8px;
+		padding: 0.5rem;
+		margin-bottom: 0.5rem;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		backdrop-filter: blur(10px);
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		min-width: 120px;
+		animation: slideUp 0.2s ease-out;
+	}
+
+	.submenu button {
+		background: none;
+		border: none;
+		color: white;
+		padding: 0.5rem 1rem;
+		text-align: left;
+		cursor: pointer;
+		border-radius: 4px;
+		transition: all 0.2s;
+	}
+
+	.submenu button:hover {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.submenu button.delete {
+		color: #ef4444;
+	}
+
+	.submenu button.delete:hover {
+		background: rgba(239, 68, 68, 0.1);
+	}
+
+	@keyframes slideUp {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.fab {
