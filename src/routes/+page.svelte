@@ -6,6 +6,7 @@
 	let focusedNoteId: string | null = null;
 	let openMenuId: string | null = null;
 	let searchQuery = '';
+	let isMenuOpen = false;
 
 	function autoResize(textarea: HTMLTextAreaElement) {
 		textarea.style.height = 'auto';
@@ -117,7 +118,11 @@
 	}
 
 	function handleHamburgerClick() {
-		console.log('Hamburger menu clicked');
+		isMenuOpen = true;
+	}
+
+	function closeMenu() {
+		isMenuOpen = false;
 	}
 
 	function handleProfileClick() {
@@ -128,6 +133,26 @@
 <svelte:window on:click={handleClickOutside} />
 
 <div class="app">
+	{#if isMenuOpen}
+		<div class="menu-overlay" on:click={closeMenu} />
+	{/if}
+
+	<div class="sliding-menu" class:open={isMenuOpen}>
+		<div class="menu-header">
+			<button class="icon-button" on:click={closeMenu} aria-label="Close menu">
+				×
+			</button>
+			<h2>Menu</h2>
+		</div>
+		<nav>
+			<ul>
+				<li><button>Home</button></li>
+				<li><button>Settings</button></li>
+				<li><button>About</button></li>
+			</ul>
+		</nav>
+	</div>
+
 	<div class="top-bar">
 		<button class="icon-button" on:click={handleHamburgerClick} aria-label="Menu">
 			☰
@@ -391,5 +416,81 @@
 	.fab:hover {
 		background: #2563eb;
 		transform: scale(1.1);
+	}
+
+	.menu-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(2px);
+		z-index: 998;
+	}
+
+	.sliding-menu {
+		position: fixed;
+		top: 0;
+		left: -80%;
+		width: 80%;
+		height: 100%;
+		background: rgba(30, 30, 30, 0.98);
+		backdrop-filter: blur(10px);
+		z-index: 999;
+		transition: left 0.3s ease-in-out;
+		border-right: 1px solid rgba(255, 255, 255, 0.1);
+		display: flex;
+		flex-direction: column;
+	}
+
+	.sliding-menu.open {
+		left: 0;
+	}
+
+	.menu-header {
+		display: flex;
+		align-items: center;
+		padding: 1rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.menu-header h2 {
+		margin: 0;
+		margin-left: 1rem;
+		font-size: 1.25rem;
+		font-weight: normal;
+	}
+
+	.sliding-menu nav {
+		flex: 1;
+		padding: 1rem;
+	}
+
+	.sliding-menu ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.sliding-menu li {
+		margin-bottom: 0.5rem;
+	}
+
+	.sliding-menu li button {
+		width: 100%;
+		text-align: left;
+		padding: 0.75rem 1rem;
+		background: none;
+		border: none;
+		color: white;
+		font-size: 1rem;
+		cursor: pointer;
+		border-radius: 4px;
+		transition: all 0.2s;
+	}
+
+	.sliding-menu li button:hover {
+		background: rgba(255, 255, 255, 0.1);
 	}
 </style>
