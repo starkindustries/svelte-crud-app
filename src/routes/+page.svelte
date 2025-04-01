@@ -56,6 +56,7 @@
 	}
 
 	function deleteTodo(id: string) {
+		delete textareas[id];
 		todos.update((t) => t.filter((todo) => todo.id !== id));
 	}
 
