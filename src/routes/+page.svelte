@@ -3,6 +3,7 @@
 	import { v4 as uuid } from 'uuid';
 
 	let textareas: { [key: string]: HTMLTextAreaElement } = {};
+	let focusedNoteId: string | null = null;
 
 	function addNote() {
 		const now = new Date();
@@ -41,6 +42,14 @@
 			)
 		);
 	}
+
+	function handleFocus(id: string) {
+		focusedNoteId = id;
+	}
+
+	function handleBlur() {
+		focusedNoteId = null;
+	}
 </script>
 
 <div class="app">
@@ -51,12 +60,16 @@
 					bind:this={textareas[todo.id]}
 					value={todo.note}
 					on:input={(e) => updateNote(todo.id, (e.target as HTMLTextAreaElement).value)}
+					on:focus={() => handleFocus(todo.id)}
+					on:blur={handleBlur}
 					placeholder="Write your note here..."
 					rows="5"
 				></textarea>
-				<div class="note-actions">
-					<button on:click={() => deleteTodo(todo.id)}>Delete</button>
-				</div>
+				{#if focusedNoteId === todo.id}
+					<button class="menu-button" on:click={() => deleteTodo(todo.id)} aria-label="Delete note">
+						⋮
+					</button>
+				{/if}
 			</div>
 		{/each}
 	</div>
@@ -85,6 +98,7 @@
 		background: rgba(255, 255, 255, 0.1);
 		border-radius: 8px;
 		backdrop-filter: blur(10px);
+		position: relative;
 	}
 
 	textarea {
@@ -101,22 +115,22 @@
 		color: rgba(255, 255, 255, 0.5);
 	}
 
-	.note-actions {
-		margin-top: 0.5rem;
-	}
-
-	button {
-		padding: 0.5rem 1rem;
-		background: rgba(255, 255, 255, 0.1);
-		color: white;
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		border-radius: 4px;
+	.menu-button {
+		position: absolute;
+		bottom: 0.5rem;
+		right: 0.5rem;
+		background: none;
+		border: none;
+		color: rgba(255, 255, 255, 0.5);
+		font-size: 1.2rem;
+		padding: 0.25rem;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
-	button:hover {
-		background: rgba(255, 255, 255, 0.2);
+	.menu-button:hover {
+		color: white;
+		transform: scale(1.1);
 	}
 
 	.fab {
