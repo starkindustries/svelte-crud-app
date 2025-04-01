@@ -91,7 +91,9 @@
 		openMenuId = null;
 	}
 
-	function handleDelete(id: string) {
+	function handleDelete(e: MouseEvent, id: string) {
+		e.preventDefault();
+		e.stopPropagation();
 		deleteTodo(id);
 		openMenuId = null;
 	}
@@ -133,7 +135,13 @@
 							<div class="submenu">
 								<button on:click={() => handleShare(todo.id)}>Share</button>
 								<button on:click={() => handleMakeCopy(todo.id)}>Make Copy</button>
-								<button class="delete" on:click={() => handleDelete(todo.id)}>Delete</button>
+								<button
+									class="delete"
+									on:click={(e) => handleDelete(e, todo.id)}
+									on:mousedown|preventDefault
+								>
+									Delete
+								</button>
 							</div>
 						{/if}
 					</div>
