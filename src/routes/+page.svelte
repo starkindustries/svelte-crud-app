@@ -5,6 +5,7 @@
 	let textareas: { [key: string]: HTMLTextAreaElement } = {};
 	let focusedNoteId: string | null = null;
 	let openMenuId: string | null = null;
+	let searchQuery = '';
 
 	function autoResize(textarea: HTMLTextAreaElement) {
 		textarea.style.height = 'auto';
@@ -109,11 +110,40 @@
 			openMenuId = null;
 		}
 	}
+
+	function handleSearch(e: Event) {
+		const query = (e.target as HTMLInputElement).value;
+		console.log('Searching for:', query);
+	}
+
+	function handleHamburgerClick() {
+		console.log('Hamburger menu clicked');
+	}
+
+	function handleProfileClick() {
+		console.log('Profile clicked');
+	}
 </script>
 
 <svelte:window on:click={handleClickOutside} />
 
 <div class="app">
+	<div class="top-bar">
+		<button class="icon-button" on:click={handleHamburgerClick} aria-label="Menu">
+			☰
+		</button>
+		<input
+			type="text"
+			class="search-bar"
+			placeholder="Search notes..."
+			bind:value={searchQuery}
+			on:input={handleSearch}
+		/>
+		<button class="icon-button" on:click={handleProfileClick} aria-label="Profile">
+			○
+		</button>
+	</div>
+
 	<div class="notes-container">
 		{#each $todos as todo}
 			<div class="note">
@@ -178,6 +208,58 @@
 		background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
 		color: white;
 		font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	}
+
+	.top-bar {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1rem;
+		background: rgba(30, 30, 30, 0.95);
+		backdrop-filter: blur(10px);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+
+	.icon-button {
+		background: none;
+		border: none;
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 1.5rem;
+		padding: 0.5rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 2.5rem;
+	}
+
+	.icon-button:hover {
+		color: white;
+	}
+
+	.search-bar {
+		flex: 1;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 4px;
+		color: white;
+		padding: 0.5rem;
+		font-size: 1rem;
+		font-family: inherit;
+	}
+
+	.search-bar::placeholder {
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.search-bar:focus {
+		outline: none;
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	.notes-container {
+		padding: 1rem;
 	}
 
 	.notes-container {
