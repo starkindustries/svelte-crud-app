@@ -82,12 +82,16 @@
 		openMenuId = openMenuId === id ? null : id;
 	}
 
-	function handleShare(id: string) {
+	function handleShare(e: MouseEvent, id: string) {
+		e.preventDefault();
+		e.stopPropagation();
 		console.log('Sharing note:', id);
 		openMenuId = null;
 	}
 
-	function handleMakeCopy(id: string) {
+	function handleMakeCopy(e: MouseEvent, id: string) {
+		e.preventDefault();
+		e.stopPropagation();
 		console.log('Making copy of note:', id);
 		openMenuId = null;
 	}
@@ -134,8 +138,18 @@
 						</button>
 						{#if openMenuId === todo.id}
 							<div class="submenu">
-								<button on:click={() => handleShare(todo.id)}>Share</button>
-								<button on:click={() => handleMakeCopy(todo.id)}>Make Copy</button>
+								<button
+									on:click={(e) => handleShare(e, todo.id)}
+									on:mousedown|preventDefault
+								>
+									Share
+								</button>
+								<button
+									on:click={(e) => handleMakeCopy(e, todo.id)}
+									on:mousedown|preventDefault
+								>
+									Make Copy
+								</button>
 								<button
 									class="delete"
 									on:click={(e) => handleDelete(e, todo.id)}
