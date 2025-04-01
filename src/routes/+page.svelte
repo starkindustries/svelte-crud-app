@@ -128,6 +128,11 @@
 	function handleProfileClick() {
 		console.log('Profile clicked');
 	}
+
+	function handleMenuItemClick(item: string) {
+		console.log(`Menu item clicked: ${item}`);
+		closeMenu();
+	}
 </script>
 
 <svelte:window on:click={handleClickOutside} />
@@ -139,16 +144,13 @@
 
 	<div class="sliding-menu" class:open={isMenuOpen}>
 		<div class="menu-header">
-			<button class="icon-button" on:click={closeMenu} aria-label="Close menu">
-				×
-			</button>
 			<h2>Menu</h2>
 		</div>
 		<nav>
 			<ul>
-				<li><button>Home</button></li>
-				<li><button>Settings</button></li>
-				<li><button>About</button></li>
+				<li><button on:click={() => handleMenuItemClick('Home')}>Home</button></li>
+				<li><button on:click={() => handleMenuItemClick('Settings')}>Settings</button></li>
+				<li><button on:click={() => handleMenuItemClick('About')}>About</button></li>
 			</ul>
 		</nav>
 	</div>
@@ -457,7 +459,6 @@
 
 	.menu-header h2 {
 		margin: 0;
-		margin-left: 1rem;
 		font-size: 1.25rem;
 		font-weight: normal;
 	}
