@@ -2,13 +2,32 @@
 	import { todos, type Todo } from '$lib/stores/todos';
 	import { v4 as uuid } from 'uuid';
 
+	let textareas: { [key: string]: HTMLTextAreaElement } = {};
+
 	function addNote() {
+		const now = new Date();
+		const dateStr = now.toLocaleString('en-US', {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: false,
+			timeZoneName: 'short'
+		}).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2').replace(',', '');
+
 		const newNote: Todo = {
 			id: uuid(),
-			note: '',
+			note: `${dateStr}\n`,
 			createdAt: new Date().toISOString()
 		};
+
 		todos.update((t) => [newNote, ...t]);
+
+		// Focus the textarea after a brief delay to ensure it's rendered
+		setTimeout(() => {
+			textareas[newNote.id]?.focus();
+		}, 0);
 	}
 
 	function deleteTodo(id: string) {
@@ -29,6 +48,7 @@
 		{#each $todos as todo}
 			<div class="note">
 				<textarea
+					bind:this={textareas[todo.id]}
 					value={todo.note}
 					on:input={(e) => updateNote(todo.id, (e.target as HTMLTextAreaElement).value)}
 					placeholder="Write your note here..."
