@@ -148,7 +148,7 @@
 		</div>
 		<nav>
 			<ul>
-				<li><button on:click={() => handleMenuItemClick('Home')}>Home</button></li>
+				<li><button on:click={() => handleMenuItemClick('Reports')}>Reports</button></li>
 				<li><button on:click={() => handleMenuItemClick('Settings')}>Settings</button></li>
 				<li><button on:click={() => handleMenuItemClick('About')}>About</button></li>
 			</ul>
