@@ -5,6 +5,17 @@
 	let textareas: { [key: string]: HTMLTextAreaElement } = {};
 	let focusedNoteId: string | null = null;
 
+	function autoResize(textarea: HTMLTextAreaElement) {
+		textarea.style.height = 'auto';
+		textarea.style.height = textarea.scrollHeight + 'px';
+	}
+
+	function handleInput(e: Event, id: string) {
+		const textarea = e.target as HTMLTextAreaElement;
+		updateNote(id, textarea.value);
+		autoResize(textarea);
+	}
+
 	function addNote() {
 		const now = new Date();
 		const dateStr = now.toLocaleString('en-US', {
@@ -27,7 +38,11 @@
 
 		// Focus the textarea after a brief delay to ensure it's rendered
 		setTimeout(() => {
-			textareas[newNote.id]?.focus();
+			const textarea = textareas[newNote.id];
+			if (textarea) {
+				textarea.focus();
+				autoResize(textarea);
+			}
 		}, 0);
 	}
 
@@ -59,11 +74,11 @@
 				<textarea
 					bind:this={textareas[todo.id]}
 					value={todo.note}
-					on:input={(e) => updateNote(todo.id, (e.target as HTMLTextAreaElement).value)}
+					on:input={(e) => handleInput(e, todo.id)}
 					on:focus={() => handleFocus(todo.id)}
 					on:blur={handleBlur}
 					placeholder="Write your note here..."
-					rows="5"
+					rows="1"
 				></textarea>
 				{#if focusedNoteId === todo.id}
 					<button class="menu-button" on:click={() => deleteTodo(todo.id)} aria-label="Delete note">
@@ -109,6 +124,9 @@
 		padding: 0.5rem;
 		border-radius: 4px;
 		font-size: 1rem;
+		min-height: 2.5rem;
+		resize: none;
+		overflow: hidden;
 	}
 
 	textarea::placeholder {
