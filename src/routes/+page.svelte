@@ -327,7 +327,7 @@
 
 	.menu-container {
 		position: absolute;
-		bottom: 0.5rem;
+		top: 0.5rem;
 		right: 0.5rem;
 	}
 
@@ -339,6 +339,10 @@
 		padding: 0.25rem;
 		cursor: pointer;
 		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 2.5rem;
 	}
 
 	.menu-button:hover {
