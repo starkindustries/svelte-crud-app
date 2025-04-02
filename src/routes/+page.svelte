@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { todos, type Todo } from '$lib/stores/todos';
 	import { v4 as uuid } from 'uuid';
+	import { goto } from '$app/navigation';
 
 	let textareas: { [key: string]: HTMLTextAreaElement } = {};
 	let focusedNoteId: string | null = null;
@@ -130,7 +131,11 @@
 	}
 
 	function handleMenuItemClick(item: string) {
-		console.log(`Menu item clicked: ${item}`);
+		if (item === 'Reports') {
+			goto('/reports');
+		} else {
+			console.log(`Menu item clicked: ${item}`);
+		}
 		closeMenu();
 	}
 </script>
