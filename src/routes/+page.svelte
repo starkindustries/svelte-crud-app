@@ -64,6 +64,7 @@
 	}
 
 	function updateNote(id: string, note: string) {
+		console.log('Updating note:', id, note);
 		todos.update((t) =>
 			t.map((todo) =>
 				todo.id === id ? { ...todo, note } : todo
