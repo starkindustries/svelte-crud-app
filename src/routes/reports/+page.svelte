@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import Chart from 'chart.js/auto';
 
 	const reports = [
 		{ id: 1, title: 'Bench Press', value: '100 lbs', date: '2024-03-31' },
@@ -12,6 +14,87 @@
 	function goBack() {
 		goto('/');
 	}
+
+	// Generate 12 months of weekly bench press data
+	function generateBenchPressData() {
+		const data = [];
+		const startDate = new Date();
+		startDate.setMonth(startDate.getMonth() - 11); // Start 11 months ago
+
+		for (let month = 0; month < 12; month++) {
+			// Generate 4 weekly sessions for each month
+			for (let week = 0; week < 4; week++) {
+				const date = new Date(startDate);
+				date.setDate(date.getDate() + (month * 30) + (week * 7));
+
+				// Generate realistic-ish volume data
+				// Base volume around 3 sets of 8-12 reps at 135-185 lbs with some variation
+				const sets = [
+					{ weight: 135 + Math.floor(Math.random() * 50), reps: 8 + Math.floor(Math.random() * 4) },
+					{ weight: 135 + Math.floor(Math.random() * 50), reps: 8 + Math.floor(Math.random() * 4) },
+					{ weight: 135 + Math.floor(Math.random() * 50), reps: 8 + Math.floor(Math.random() * 4) }
+				];
+
+				const totalVolume = sets.reduce((acc, set) => acc + (set.weight * set.reps), 0);
+
+				data.push({
+					date: date.toISOString().split('T')[0],
+					volume: totalVolume
+				});
+			}
+		}
+
+		return data;
+	}
+
+	onMount(() => {
+		const ctx = document.getElementById('volumeChart') as HTMLCanvasElement;
+		const data = generateBenchPressData();
+
+		new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: data.map(d => d.date),
+				datasets: [{
+					label: 'Bench Press Volume (lbs × reps)',
+					data: data.map(d => d.volume),
+					borderColor: '#3b82f6',
+					backgroundColor: 'rgba(59, 130, 246, 0.1)',
+					tension: 0.4,
+					fill: true
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						labels: {
+							color: 'rgba(255, 255, 255, 0.7)'
+						}
+					}
+				},
+				scales: {
+					x: {
+						grid: {
+							color: 'rgba(255, 255, 255, 0.1)'
+						},
+						ticks: {
+							color: 'rgba(255, 255, 255, 0.7)'
+						}
+					},
+					y: {
+						grid: {
+							color: 'rgba(255, 255, 255, 0.1)'
+						},
+						ticks: {
+							color: 'rgba(255, 255, 255, 0.7)'
+						}
+					}
+				}
+			}
+		});
+	});
 </script>
 
 <div class="reports-page">
@@ -19,21 +102,11 @@
 		<button class="back-button" on:click={goBack} aria-label="Go back">
 			←
 		</button>
-		<h1>Reports</h1>
+		<h1>Exercise Volume Report</h1>
 	</div>
 
-	<div class="reports-container">
-		{#each reports as report}
-			<div class="report-card">
-				<div class="report-header">
-					<h2>{report.title}</h2>
-					<span class="date">{report.date}</span>
-				</div>
-				<div class="report-value">
-					{report.value}
-				</div>
-			</div>
-		{/each}
+	<div class="chart-container">
+		<canvas id="volumeChart"></canvas>
 	</div>
 </div>
 
@@ -79,39 +152,12 @@
 		font-weight: normal;
 	}
 
-	.reports-container {
+	.chart-container {
 		padding: 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.report-card {
-		background: rgba(255, 255, 255, 0.1);
+		height: 70vh;
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 8px;
+		margin: 1rem;
 		backdrop-filter: blur(10px);
-		padding: 1rem;
-	}
-
-	.report-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 0.5rem;
-	}
-
-	.report-header h2 {
-		margin: 0;
-		font-size: 1.1rem;
-		font-weight: normal;
-	}
-
-	.date {
-		font-size: 0.9rem;
-		color: rgba(255, 255, 255, 0.5);
-	}
-
-	.report-value {
-		font-size: 1.5rem;
-		font-weight: bold;
 	}
 </style>
