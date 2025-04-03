@@ -131,9 +131,77 @@
 		console.log('Profile clicked');
 	}
 
+	function generateWorkoutData() {
+		const exercises = [
+			{ name: 'Bench Press', sets: 2, startWeight: 135, startReps: 10, weightIncrement: 5 },
+			{ name: 'Squat', sets: 3, startWeight: 225, startReps: 5, weightIncrement: 10 },
+			{ name: 'Deadlift', sets: 2, startWeight: 275, startReps: 3, weightIncrement: 10 },
+			{ name: 'Overhead Press', sets: 2, startWeight: 95, startReps: 8, weightIncrement: 5 },
+			{ name: 'Barbell Row', sets: 2, startWeight: 135, startReps: 10, weightIncrement: 5 },
+			{ name: 'Pull-Up', sets: 3, startWeight: 175, startReps: 8, weightIncrement: 0 }, // bodyweight
+			{ name: 'Leg Raises', sets: 3, startWeight: 0, startReps: 15, weightIncrement: 0 } // bodyweight
+		];
+
+		const startDate = new Date();
+		startDate.setFullYear(startDate.getFullYear() - 1); // Start 1 year ago
+
+		for (let week = 0; week < 52; week++) {
+			const workoutDate = new Date(startDate);
+			workoutDate.setDate(workoutDate.getDate() + (week * 7));
+
+			// Format date as "YYYY-MM-DD HH:mm PDT"
+			const dateStr = workoutDate.toISOString().split('T')[0] + ' 20:39 PDT';
+
+			// Randomly select 3-7 exercises
+			const selectedExercises = [...exercises]
+				.sort(() => Math.random() - 0.5)
+				.slice(0, 3 + Math.floor(Math.random() * 5));
+
+			let workoutText = dateStr + '\n\n';
+
+			selectedExercises.forEach((exercise, idx) => {
+				workoutText += exercise.name + '\n';
+
+				// Calculate progress based on weeks (with some plateaus)
+				const progressWeeks = Math.floor(week * 0.7); // Only progress 70% of weeks
+				const weightProgress = progressWeeks * exercise.weightIncrement;
+				const currentWeight = exercise.startWeight + weightProgress;
+
+				for (let set = 0; set < exercise.sets; set++) {
+					if (exercise.name === 'Pull-Up' || exercise.name === 'Leg Raises') {
+						const reps = exercise.startReps + Math.floor(progressWeeks * 0.2);
+						workoutText += `${exercise.name === 'Pull-Up' ? 'Bodyweight' : 'Body'} x ${reps}\n`;
+					} else {
+						const weight = currentWeight - (set * exercise.weightIncrement);
+						const reps = exercise.startReps - set;
+						workoutText += `${weight} x ${reps}\n`;
+					}
+				}
+
+				// Add blank line between exercises, except for the last one
+				if (idx < selectedExercises.length - 1) {
+					workoutText += '\n';
+				}
+			});
+
+			// Add the workout note
+			const newNote: Todo = {
+				id: uuid(),
+				note: workoutText,
+				createdAt: new Date().toISOString()
+			};
+
+			todos.update(t => [...t, newNote]);
+		}
+	}
+
 	function handleMenuItemClick(item: string) {
 		if (item === 'Reports') {
 			goto('/reports');
+		} else if (item === 'Generate Test Data') {
+			console.log('Generating test data...');
+			generateWorkoutData();
+			console.log('Generated 52 weeks of workout data');
 		} else {
 			console.log(`Menu item clicked: ${item}`);
 		}
@@ -155,6 +223,7 @@
 		<nav>
 			<ul>
 				<li><button on:click={() => handleMenuItemClick('Reports')}>Reports</button></li>
+				<li><button on:click={() => handleMenuItemClick('Generate Test Data')}>Generate Test Data</button></li>
 				<li><button on:click={() => handleMenuItemClick('Settings')}>Settings</button></li>
 				<li><button on:click={() => handleMenuItemClick('About')}>About</button></li>
 			</ul>
