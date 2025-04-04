@@ -44,7 +44,7 @@ Bench Press
 150 x 9
 `;
 
-    const parsed = parseNote(note);
+    const parsed = parseNote(note, {});
     console.log('parsed', parsed);
     expect(true).toBe(true);
 });
