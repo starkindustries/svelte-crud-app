@@ -65,11 +65,9 @@ Bench Press
 type Unit = "lbs" | "kg";
 type Set = [weight: number, unit: Unit, reps: number];
 type ExerciseData = { [date: string]: Set[] };
-type WorkoutData = { [exercise: string]: ExerciseData };
+export type WorkoutData = { [exercise: string]: ExerciseData };
 
-export function parseNote(note: string, exerciseData: WorkoutData) {
-    const workoutData: WorkoutData = {};
-
+export function parseNote(note: string, workoutData: WorkoutData) {
     // Parse each line
     const lines = note.split('\n');
     let currentDate = '';

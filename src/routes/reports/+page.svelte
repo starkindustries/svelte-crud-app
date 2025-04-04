@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import Chart from 'chart.js/auto';
+	import { todos, type Todo } from '$lib/stores/todos';
+	import { type WorkoutData, parseNote } from './parse-notes';
+	import Chart, { DatasetController } from 'chart.js/auto';
 
 	const reports = [
 		{ id: 1, title: 'Bench Press', value: '100 lbs', date: '2024-03-31' },
@@ -44,20 +46,52 @@
 			}
 		}
 
+		console.log("GENERATED BENCH PRESS DATA: ", data);
 		return data;
+	}
+
+	function parseWorkoutData() {
+		const workoutData: WorkoutData = {};
+		$todos.forEach(todo => {
+			parseNote(todo["note"], workoutData);
+		});
+		return workoutData;
 	}
 
 	onMount(() => {
 		const ctx = document.getElementById('volumeChart') as HTMLCanvasElement;
 		const data = generateBenchPressData();
+		const workoutData = parseWorkoutData();
+		console.log(workoutData);
+
+		// calculate volume per exercise
+		const benchpress = workoutData["Bench Press"];
+		console.log("BENCH PRESS: ", benchpress);
+		let dates = [];
+		let volumes = [];
+		for (const [date, sets] of Object.entries(benchpress)) {
+			dates.push(date);
+			let volume = 0;
+			// TODO: VERY IMPORTANT: handle unit
+			for (const [weight, _unit, reps] of sets) {
+				volume += weight * reps;
+			}
+			volumes.push(volume)
+		}
+
+		// verify that dates and volumes are the same length
+		if (dates.length !== volumes.length) {
+			throw new Error('Assertion failed: dates and volumes are not the same length');
+		}
+
 
 		new Chart(ctx, {
 			type: 'line',
 			data: {
-				labels: data.map(d => d.date),
+				labels: dates,
 				datasets: [{
 					label: 'Bench Press Volume (lbs × reps)',
-					data: data.map(d => d.volume),
+					data: volumes,
 					borderColor: '#3b82f6',
 					backgroundColor: 'rgba(59, 130, 246, 0.1)',
 					tension: 0.4,
