@@ -1,11 +1,11 @@
-import { todos } from '$lib/stores/notes';
+import { notes } from '$lib/stores/notes';
 import { get } from 'svelte/store';
 import { describe, it, expect, test } from 'vitest';
 import { parseNote } from './parse-notes';
 
 describe('Parse Test Suite', () => {
     it('should pass a basic test', () => {
-        console.log('todos', get(todos));
+        console.log('notes', get(notes));
         expect(true).toBe(true);
     });
 
@@ -19,7 +19,7 @@ test('adds numbers correctly', () => {
     expect(1 + 1).toBe(2);
 });
 
-test('parse todo data', () => {
+test('parse note data', () => {
     const note = `2024-05-15 20:39 PDT
 
 Overhead Press

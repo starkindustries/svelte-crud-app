@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { todos, type Todo } from '$lib/stores/notes';
+	import { notes, type Note } from '$lib/stores/notes';
 	import { type WorkoutData, parseNote } from './parse-notes';
 	import Chart from 'chart.js/auto';
 
@@ -22,8 +22,8 @@
 
 	function parseWorkoutData(): WorkoutData {
 		const workoutData: WorkoutData = {};
-		$todos.forEach(todo => {
-			parseNote(todo["note"], workoutData);
+		$notes.forEach(note => {
+			parseNote(note["content"], workoutData);
 		});
 		return workoutData;
 	}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { todos, type Todo } from '$lib/stores/notes';
+	import { notes, type Note } from '$lib/stores/notes';
 	import { v4 as uuid } from 'uuid';
 	import { goto } from '$app/navigation';
 
@@ -42,13 +42,13 @@
 			timeZoneName: 'short'
 		}).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2').replace(',', '');
 
-		const newNote: Todo = {
+		const newNote: Note = {
 			id: uuid(),
-			note: `${dateStr}\n`,
+			content: `${dateStr}\n`,
 			createdAt: new Date().toISOString()
 		};
 
-		todos.update((t) => [newNote, ...t]);
+		notes.update((t) => [newNote, ...t]);
 
 		// Focus the textarea after a brief delay to ensure it's rendered
 		setTimeout(() => {
@@ -60,16 +60,16 @@
 		}, 0);
 	}
 
-	function deleteTodo(id: string) {
+	function deleteNote(id: string) {
 		delete textareas[id];
-		todos.update((t) => t.filter((todo) => todo.id !== id));
+		notes.update((t) => t.filter((note) => note.id !== id));
 	}
 
 	function updateNote(id: string, note: string) {
 		console.log('Updating note:', id, note);
-		todos.update((t) =>
-			t.map((todo) =>
-				todo.id === id ? { ...todo, note } : todo
+		notes.update((n) =>
+			n.map((note) =>
+				note.id === id ? { ...note, note } : note
 			)
 		);
 	}
@@ -100,7 +100,7 @@
 		e.stopPropagation();
 
 		// Find the original note
-		const originalNote = $todos.find(todo => todo.id === id);
+		const originalNote = $notes.find(note => note.id === id);
 		if (!originalNote) return;
 
 		// Format the current date
@@ -116,17 +116,17 @@
 		}).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2').replace(',', '');
 
 		// Get the note content without the first line (old date)
-		const noteContent = originalNote.note.split('\n').slice(1).join('\n');
+		const noteContent = originalNote.content.split('\n').slice(1).join('\n');
 
 		// Create a new note with updated date
-		const newNote: Todo = {
+		const newNote: Note = {
 			id: uuid(),
-			note: `${dateStr}\n${noteContent}`,
+			content: `${dateStr}\n${noteContent}`,
 			createdAt: new Date().toISOString()
 		};
 
 		// Add the new note to the store
-		todos.update(t => [newNote, ...t]);
+		notes.update(n => [newNote, ...n]);
 
 		// Focus the new note's textarea after a brief delay
 		setTimeout(() => {
@@ -143,7 +143,7 @@
 	function handleDelete(e: MouseEvent, id: string) {
 		e.preventDefault();
 		e.stopPropagation();
-		deleteTodo(id);
+		deleteNote(id);
 		openMenuId = null;
 	}
 
@@ -225,18 +225,18 @@
 			});
 
 			// Add the workout note
-			const newNote: Todo = {
+			const newNote: Note = {
 				id: uuid(),
-				note: workoutText,
+				content: workoutText,
 				createdAt: new Date().toISOString()
 			};
 
-			todos.update(t => [...t, newNote]);
+			notes.update(n => [...n, newNote]);
 		}
 	}
 
 	function removeWorkoutData() {
-		todos.update(t => t.filter(todo => !todo.note.includes('23:59 UTC')));
+		notes.update(n => n.filter(note => !note.content.includes('23:59 UTC')));
 		console.log('Removed generated workout data');
 	}
 
@@ -296,44 +296,44 @@
 	</div>
 
 	<div class="notes-container">
-		{#each $todos as todo}
+		{#each $notes as note}
 			<div class="note">
 				<textarea
-					bind:this={textareas[todo.id]}
-					value={todo.note}
-					on:input={(e) => handleInput(e, todo.id)}
-					on:focus={() => handleFocus(todo.id)}
+					bind:this={textareas[note.id]}
+					value={note.content}
+					on:input={(e) => handleInput(e, note.id)}
+					on:focus={() => handleFocus(note.id)}
 					on:blur={handleBlur}
 					placeholder="Write your note here..."
 					rows="1"
 				></textarea>
-				{#if focusedNoteId === todo.id}
+				{#if focusedNoteId === note.id}
 					<div class="menu-container">
 						<button
 							class="menu-button"
-							on:click={(e) => handleMenuClick(e, todo.id)}
+							on:click={(e) => handleMenuClick(e, note.id)}
 							on:mousedown|preventDefault
 							aria-label="Open menu"
 						>
 							⋮
 						</button>
-						{#if openMenuId === todo.id}
+						{#if openMenuId === note.id}
 							<div class="submenu">
 								<button
-									on:click={(e) => handleShare(e, todo.id)}
+									on:click={(e) => handleShare(e, note.id)}
 									on:mousedown|preventDefault
 								>
 									Share
 								</button>
 								<button
-									on:click={(e) => handleMakeCopy(e, todo.id)}
+									on:click={(e) => handleMakeCopy(e, note.id)}
 									on:mousedown|preventDefault
 								>
 									Make Copy
 								</button>
 								<button
 									class="delete"
-									on:click={(e) => handleDelete(e, todo.id)}
+									on:click={(e) => handleDelete(e, note.id)}
 									on:mousedown|preventDefault
 								>
 									Delete
