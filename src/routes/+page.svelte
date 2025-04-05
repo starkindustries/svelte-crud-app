@@ -195,6 +195,11 @@
 		}
 	}
 
+	function removeWorkoutData() {
+		todos.update(t => t.filter(todo => !todo.note.includes('20:39 PDT')));
+		console.log('Removed generated workout data');
+	}
+
 	function handleMenuItemClick(item: string) {
 		if (item === 'Reports') {
 			goto('/reports');
@@ -202,6 +207,9 @@
 			console.log('Generating test data...');
 			generateWorkoutData();
 			console.log('Generated 52 weeks of workout data');
+		} else if (item === 'Remove Test Data') {
+			console.log('Removing test data...');
+			removeWorkoutData();
 		} else {
 			console.log(`Menu item clicked: ${item}`);
 		}
@@ -224,6 +232,7 @@
 			<ul>
 				<li><button on:click={() => handleMenuItemClick('Reports')}>Reports</button></li>
 				<li><button on:click={() => handleMenuItemClick('Generate Test Data')}>Generate Test Data</button></li>
+				<li><button on:click={() => handleMenuItemClick('Remove Test Data')}>Remove Test Data</button></li>
 				<li><button on:click={() => handleMenuItemClick('Settings')}>Settings</button></li>
 				<li><button on:click={() => handleMenuItemClick('About')}>About</button></li>
 			</ul>
