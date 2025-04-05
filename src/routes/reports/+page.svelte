@@ -17,40 +17,7 @@
 		goto('/');
 	}
 
-	// Generate 12 months of weekly bench press data
-	function generateBenchPressData() {
-		const data = [];
-		const startDate = new Date();
-		startDate.setMonth(startDate.getMonth() - 11); // Start 11 months ago
-
-		for (let month = 0; month < 12; month++) {
-			// Generate 4 weekly sessions for each month
-			for (let week = 0; week < 4; week++) {
-				const date = new Date(startDate);
-				date.setDate(date.getDate() + (month * 30) + (week * 7));
-
-				// Generate realistic-ish volume data
-				// Base volume around 3 sets of 8-12 reps at 135-185 lbs with some variation
-				const sets = [
-					{ weight: 135 + Math.floor(Math.random() * 50), reps: 8 + Math.floor(Math.random() * 4) },
-					{ weight: 135 + Math.floor(Math.random() * 50), reps: 8 + Math.floor(Math.random() * 4) },
-					{ weight: 135 + Math.floor(Math.random() * 50), reps: 8 + Math.floor(Math.random() * 4) }
-				];
-
-				const totalVolume = sets.reduce((acc, set) => acc + (set.weight * set.reps), 0);
-
-				data.push({
-					date: date.toISOString().split('T')[0],
-					volume: totalVolume
-				});
-			}
-		}
-
-		console.log("GENERATED BENCH PRESS DATA: ", data);
-		return data;
-	}
-
-	function parseWorkoutData() {
+	function parseWorkoutData(): WorkoutData {
 		const workoutData: WorkoutData = {};
 		$todos.forEach(todo => {
 			parseNote(todo["note"], workoutData);
@@ -59,86 +26,97 @@
 	}
 
 	onMount(() => {
-		const ctx = document.getElementById('volumeChart') as HTMLCanvasElement;
-		const data = generateBenchPressData();
+		const container = document.getElementById('reportsPage') as HTMLDivElement;
+		if (!container) {
+			throw new Error('Container not found');
+		}
+
 		const workoutData = parseWorkoutData();
 		console.log(workoutData);
 
-		// calculate volume per exercise
-		const benchpress = workoutData["Bench Press"];
-		console.log("BENCH PRESS: ", benchpress);
-		let dates = [];
-		let volumes = [];
-		for (const [date, sets] of Object.entries(benchpress)) {
-			dates.push(date);
-			let volume = 0;
-			// TODO: VERY IMPORTANT: handle unit
-			for (const [weight, _unit, reps] of sets) {
-				volume += weight * reps;
+		// Loop through each exercise in the workoutData object
+		for (const [exerciseName, exerciseData] of Object.entries(workoutData)) {
+
+			// calculate volume per exercise
+			let dates = [];
+			let volumes = [];
+			for (const [date, sets] of Object.entries(exerciseData)) {
+				dates.push(date);
+				let volume = 0;
+				// TODO: VERY IMPORTANT: handle unit
+				for (const [weight, _unit, reps] of sets) {
+					volume += weight * reps;
+				}
+				volumes.push(volume)
 			}
-			volumes.push(volume)
-		}
 
-		// verify that dates and volumes are the same length
-		if (dates.length !== volumes.length) {
-			throw new Error('Assertion failed: dates and volumes are not the same length');
-		}
+			// verify that dates and volumes are the same length
+			if (dates.length !== volumes.length) {
+				throw new Error('Assertion failed: dates and volumes are not the same length');
+			}
 
+			// Create a canvas element for this chart
+			const div = document.createElement('div');
+			div.classList.add('chart-container');
+			const canvas = document.createElement('canvas');
+			div.appendChild(canvas);
+			container.appendChild(div);
 
-		new Chart(ctx, {
-			type: 'line',
-			data: {
-				labels: dates,
-				datasets: [{
-					label: 'Bench Press Volume (lbs × reps)',
-					data: volumes,
-					borderColor: '#3b82f6',
-					backgroundColor: 'rgba(59, 130, 246, 0.1)',
-					tension: 0.4,
-					fill: true
-				}]
-			},
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				plugins: {
-					legend: {
-						labels: {
-							color: 'rgba(255, 255, 255, 0.7)'
-						}
-					}
+			// Create a new chart instance
+			new Chart(canvas, {
+				type: 'line',
+				data: {
+					labels: dates,
+					datasets: [{
+						label: exerciseName + ' Volume (lbs × reps)',
+						data: volumes,
+						borderColor: '#3b82f6',
+						backgroundColor: 'rgba(59, 130, 246, 0.1)',
+						tension: 0.4,
+						fill: true
+					}]
 				},
-				scales: {
-					x: {
-						grid: {
-							color: 'rgba(255, 255, 255, 0.1)'
-						},
-						ticks: {
-							color: 'rgba(255, 255, 255, 0.7)'
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: {
+							labels: {
+								color: 'rgba(255, 255, 255, 0.7)'
+							}
 						}
 					},
-					y: {
-						grid: {
-							color: 'rgba(255, 255, 255, 0.1)'
+					scales: {
+						x: {
+							grid: {
+								color: 'rgba(255, 255, 255, 0.1)'
+							},
+							ticks: {
+								color: 'rgba(255, 255, 255, 0.7)'
+							}
 						},
-						ticks: {
-							color: 'rgba(255, 255, 255, 0.7)'
+						y: {
+							grid: {
+								color: 'rgba(255, 255, 255, 0.1)'
+							},
+							ticks: {
+								color: 'rgba(255, 255, 255, 0.7)'
+							}
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 	});
 </script>
 
-<div class="reports-page">
+<div class="reports-page" id="reportsPage">
 	<div class="top-bar">
 		<button class="back-button" on:click={goBack} aria-label="Go back">
 			←
 		</button>
 		<h1>Exercise Volume Report</h1>
 	</div>
-
 	<div class="chart-container">
 		<canvas id="volumeChart"></canvas>
 	</div>
@@ -189,7 +167,7 @@
 	.chart-container {
 		padding: 1rem;
 		height: 70vh;
-		background: rgba(255, 255, 255, 0.05);
+		background: rgba(250, 9, 9, 0.842);
 		border-radius: 8px;
 		margin: 1rem;
 		backdrop-filter: blur(10px);
