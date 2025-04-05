@@ -10,8 +10,10 @@
 	let isMenuOpen = false;
 
 	function autoResize(textarea: HTMLTextAreaElement) {
-		textarea.style.height = 'auto';
-		textarea.style.height = textarea.scrollHeight + 'px';
+		if (textarea) {
+			textarea.style.height = 'auto';
+			textarea.style.height = textarea.scrollHeight + 'px';
+		}
 	}
 
 	// Reactive statement to handle textarea resizing
@@ -150,7 +152,7 @@
 			workoutDate.setDate(workoutDate.getDate() + (week * 7));
 
 			// Format date as "YYYY-MM-DD HH:mm PDT"
-			const dateStr = workoutDate.toISOString().split('T')[0] + ' 20:39 PDT';
+			const dateStr = workoutDate.toISOString().split('T')[0] + ' 23:59 UTC';
 
 			// Randomly select 3-7 exercises
 			const selectedExercises = [...exercises]
@@ -196,7 +198,7 @@
 	}
 
 	function removeWorkoutData() {
-		todos.update(t => t.filter(todo => !todo.note.includes('20:39 PDT')));
+		todos.update(t => t.filter(todo => !todo.note.includes('23:59 UTC')));
 		console.log('Removed generated workout data');
 	}
 
