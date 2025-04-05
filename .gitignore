@@ -48,3 +48,6 @@ yarn-error.log*
 
 # Environment files (local configs)
 /.env.*
+
+# Vitest
+coverage/
