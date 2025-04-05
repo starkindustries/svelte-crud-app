@@ -103,10 +103,25 @@
 		const originalNote = $todos.find(todo => todo.id === id);
 		if (!originalNote) return;
 
-		// Create a new note with the same content but new ID
+		// Format the current date
+		const now = new Date();
+		const dateStr = now.toLocaleString('en-US', {
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: false,
+			timeZoneName: 'short'
+		}).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2').replace(',', '');
+
+		// Get the note content without the first line (old date)
+		const noteContent = originalNote.note.split('\n').slice(1).join('\n');
+
+		// Create a new note with updated date
 		const newNote: Todo = {
 			id: uuid(),
-			note: originalNote.note,
+			note: `${dateStr}\n${noteContent}`,
 			createdAt: new Date().toISOString()
 		};
 
