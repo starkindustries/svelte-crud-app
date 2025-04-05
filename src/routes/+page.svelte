@@ -471,21 +471,22 @@
 
 	.submenu {
 		position: absolute;
-		bottom: 100%;
+		top: 100%;
 		right: 0;
 		background: rgba(30, 30, 30, 0.95);
 		border-radius: 8px;
 		padding: 0.5rem;
-		margin-bottom: 0.5rem;
+		margin-top: 0.5rem;
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 		backdrop-filter: blur(10px);
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
 		min-width: 150px;
-		animation: slideUp 0.2s ease-out;
+		animation: slideDown 0.2s ease-out;
 		white-space: nowrap;
 		font-family: inherit;
+		z-index: 1000;
 	}
 
 	.submenu button {
@@ -513,10 +514,10 @@
 		background: rgba(239, 68, 68, 0.1);
 	}
 
-	@keyframes slideUp {
+	@keyframes slideDown {
 		from {
 			opacity: 0;
-			transform: translateY(10px);
+			transform: translateY(-10px);
 		}
 		to {
 			opacity: 1;
