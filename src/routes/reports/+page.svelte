@@ -3,7 +3,10 @@
 	import { onMount } from 'svelte';
 	import { todos, type Todo } from '$lib/stores/todos';
 	import { type WorkoutData, parseNote } from './parse-notes';
-	import Chart, { DatasetController } from 'chart.js/auto';
+	import Chart from 'chart.js/auto';
+
+	let charts: { [key: string]: Chart } = {};
+	let canvasElements: { [key: string]: HTMLCanvasElement } = {};
 
 	const reports = [
 		{ id: 1, title: 'Bench Press', value: '100 lbs', date: '2024-03-31' },
@@ -26,18 +29,15 @@
 	}
 
 	onMount(() => {
-		const container = document.getElementById('reportsPage') as HTMLDivElement;
-		if (!container) {
-			throw new Error('Container not found');
-		}
-
 		const workoutData = parseWorkoutData();
 		console.log(workoutData);
 
-		// Loop through each exercise in the workoutData object
-		for (const [exerciseName, exerciseData] of Object.entries(workoutData)) {
+		// Initialize charts for each exercise
+		Object.entries(workoutData).forEach(([exerciseName, exerciseData]) => {
+			const canvas = canvasElements[exerciseName];
+			if (!canvas) return;
 
-			// calculate volume per exercise
+			// Calculate volume per exercise
 			let dates = [];
 			let volumes = [];
 			for (const [date, sets] of Object.entries(exerciseData)) {
@@ -47,23 +47,11 @@
 				for (const [weight, _unit, reps] of sets) {
 					volume += weight * reps;
 				}
-				volumes.push(volume)
+				volumes.push(volume);
 			}
 
-			// verify that dates and volumes are the same length
-			if (dates.length !== volumes.length) {
-				throw new Error('Assertion failed: dates and volumes are not the same length');
-			}
-
-			// Create a canvas element for this chart
-			const div = document.createElement('div');
-			div.classList.add('chart-container');
-			const canvas = document.createElement('canvas');
-			div.appendChild(canvas);
-			container.appendChild(div);
-
-			// Create a new chart instance
-			new Chart(canvas, {
+			// Create chart
+			charts[exerciseName] = new Chart(canvas, {
 				type: 'line',
 				data: {
 					labels: dates,
@@ -106,20 +94,28 @@
 					}
 				}
 			});
-		}
+		});
+
+		return () => {
+			// Cleanup charts on component destroy
+			Object.values(charts).forEach(chart => chart.destroy());
+		};
 	});
 </script>
 
-<div class="reports-page" id="reportsPage">
+<div class="reports-page">
 	<div class="top-bar">
 		<button class="back-button" on:click={goBack} aria-label="Go back">
 			←
 		</button>
 		<h1>Exercise Volume Report</h1>
 	</div>
-	<div class="chart-container">
-		<canvas id="volumeChart"></canvas>
-	</div>
+
+	{#each Object.entries(parseWorkoutData()) as [exerciseName, _]}
+		<div class="chart-container">
+			<canvas bind:this={canvasElements[exerciseName]}></canvas>
+		</div>
+	{/each}
 </div>
 
 <style>
@@ -167,7 +163,7 @@
 	.chart-container {
 		padding: 1rem;
 		height: 70vh;
-		background: rgba(250, 9, 9, 0.842);
+		background: rgba(255, 255, 255, 0.05);
 		border-radius: 8px;
 		margin: 1rem;
 		backdrop-filter: blur(10px);
