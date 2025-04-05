@@ -98,7 +98,30 @@
 	function handleMakeCopy(e: MouseEvent, id: string) {
 		e.preventDefault();
 		e.stopPropagation();
-		console.log('Making copy of note:', id);
+
+		// Find the original note
+		const originalNote = $todos.find(todo => todo.id === id);
+		if (!originalNote) return;
+
+		// Create a new note with the same content but new ID
+		const newNote: Todo = {
+			id: uuid(),
+			note: originalNote.note,
+			createdAt: new Date().toISOString()
+		};
+
+		// Add the new note to the store
+		todos.update(t => [newNote, ...t]);
+
+		// Focus the new note's textarea after a brief delay
+		setTimeout(() => {
+			const textarea = textareas[newNote.id];
+			if (textarea) {
+				textarea.focus();
+				autoResize(textarea);
+			}
+		}, 0);
+
 		openMenuId = null;
 	}
 
