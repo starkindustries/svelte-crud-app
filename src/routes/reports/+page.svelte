@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { todos, type Todo } from '$lib/stores/todos';
+	import { todos, type Todo } from '$lib/stores/notes';
 	import { type WorkoutData, parseNote } from './parse-notes';
 	import Chart from 'chart.js/auto';
 

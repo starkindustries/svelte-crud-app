@@ -1,4 +1,4 @@
-import { todos } from '$lib/stores/todos';
+import { todos } from '$lib/stores/notes';
 import { get } from 'svelte/store';
 import { describe, it, expect, test } from 'vitest';
 import { parseNote } from './parse-notes';

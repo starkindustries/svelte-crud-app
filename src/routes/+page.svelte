@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { todos, type Todo } from '$lib/stores/todos';
+	import { todos, type Todo } from '$lib/stores/notes';
 	import { v4 as uuid } from 'uuid';
 	import { goto } from '$app/navigation';
 
